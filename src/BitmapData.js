@@ -702,6 +702,7 @@ _bmd02.fillRect(rect, color02);</code></pre>
 		}
 		var d = imgData.data;
 		var buffer = [new createjs.Point(x, y)];
+		var updated = [];
 		while (buffer.length) {
 			var p = buffer.shift();
 			var px = p.x;
@@ -721,11 +722,14 @@ _bmd02.fillRect(rect, color02);</code></pre>
 			}
 			for (var i = xl; i <= xr; i++) {
 				this.setPixel32(i, py, color);
+				updated.push({x: i, y: py, color: color, oldColor: targetColor})
 			}
 			if (py + 1 < h) scanLine.call(this, xl, xr, py + 1, targetColor, buffer);
 			if (0 <= py - 1) scanLine.call(this, xl, xr, py - 1, targetColor, buffer);
 		}
 		this.updateContext();
+
+		return updated;
 	};
 
 	function scanLine(xl, xr, y, targetColor, buffer) {
@@ -1740,6 +1744,7 @@ _bmd01.threshold(source, sourceRect, destPoint, operation, threshold, color, mas
 	* @method updateContext
 	**/
 	p.updateContext = function() {
+		if (this._contextChanged) this.updateImageData();
 		this.context.putImageData(this._imageData, 0, 0);
 	};
 
